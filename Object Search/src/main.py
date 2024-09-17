@@ -45,15 +45,17 @@ def handleButton():
         current_state = ROBOT_SEARCHING
         left_motor.spin(FORWARD, 30)
         right_motor.spin(FORWARD, -30)
+        cameraTimer.event(cameraTimerCallback, 50)
+
 
     else: ## failsafe; go to IDLE from any other state
         print(' -> IDLE')
         current_state = ROBOT_IDLE
         left_motor.stop()
         right_motor.stop()
+        cameraTimer.reset()
 
 button.pressed(handleButton)
-
 
 target_x = 160
 K_x = 0.5
@@ -80,6 +82,8 @@ def cameraTimerCallback():
     global current_state
     global missedDetections
 
+    print("camera")
+
     ## Here we use a checker-handler, where the checker is looking to see if there is a new object detection
     ## We don't use a "CheckForObjects()" function because take_snapshot acts in that capacity.
     ## It returns a non-empty list if there is a detection
@@ -88,12 +92,11 @@ def cameraTimerCallback():
     else: missedDetections = missedDetections + 1
 
     if(missedDetections > 20):
-        handleMissedDetection()
+        handleMissedDetections()
 
     # restart the timer
-    cameraTimer.event(cameraTimerCallback, 50)
-
-cameraTimer.event(cameraTimerCallback, 50)
+    if(current_state != ROBOT_IDLE):
+        cameraTimer.event(cameraTimerCallback, 50)
 
 
 def handleObjectDetection():
@@ -118,7 +121,6 @@ def handleObjectDetection():
 
     ## reset the time out timer
     missedDetections = 0
-
 
 ## Our main loop
 while True:
