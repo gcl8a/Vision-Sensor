@@ -66,7 +66,7 @@ K_x = 0.5
 We'll keep track of missed detections. If it exceeds some threshold, go back to SEARCHING
 '''
 missedDetections = 0
-def handleMissedDetections():
+def handleLostObject():
     global current_state
     if current_state == ROBOT_APPROACHING:
         print('APPROACHING -> SEARCHING') ## Pro-tip: print out state _transitions_
@@ -119,8 +119,12 @@ def handleObjectDetection():
     ## reset the time out timer
     missedDetections = 0
 
+def checkForLostObject():
+    ## THIS IS NOT A PROPER _EVENT_ CHECKER!!!!!
+    if(missedDetections > 20): return True
+    else: return False
+
 ## Our main loop
 while True:
-    ## if enough cycles have passed without a detection, deal with that
-    if(missedDetections > 20):
-        handleMissedDetections()
+    ## if enough cycles have passed without a detection, we've lost the object
+    if(checkForLostObject()): handleLostObject()
