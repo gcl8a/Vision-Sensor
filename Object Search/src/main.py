@@ -5,6 +5,9 @@ The robot has three states:
     IDLE - waiting for the button press
     SEARCHING - spins slowly until it finds an object
     APPROACHING - drives towards the object
+
+Camera checking is done on a timer. If no object is found, a counter is incremented and
+if the counter reaches a threshold, the robot goes back into searching mode.
 '''
 
 # Library imports
@@ -29,8 +32,7 @@ right_motor = Motor(Ports.PORT10, GearSetting.RATIO_18_1, True)
 ## Note that we define the signatures first and then pass them to the Vision constructor --
 ## I don't know if that is truly needed or not
 Vision3__RED_TSHIRT = Signature (1, 11131, 11623, 11377, -1223, -731, -977, 8.8, 0)
-Vision3__SEAFOAM_TSHIRT = Signature (2, -2251, -1827, -2039, 2299, 2997, 2648, 3.7, 0)
-Vision3 = Vision (Ports.PORT19, 72, Vision3__RED_TSHIRT, Vision3__SEAFOAM_TSHIRT)
+Vision3 = Vision (Ports.PORT19, 72, Vision3__RED_TSHIRT)
 
 '''
 The button (bumper) makes use of the built-in event system.
