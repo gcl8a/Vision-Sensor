@@ -58,23 +58,48 @@ button.pressed(handleButton)
 target_x = 160
 K_x = 0.5
 
-last_detection = 0
-objectTimer = Timer()
-def objectTimerCallback():
+'''
+We'll keep track of missed detections. If it exceeds some threshold, go back to SEARCHING
+'''
+missedDetections = 0
+def handleMissedDetections():
     global current_state
-
-    print('timer expired ')
     if current_state == ROBOT_APPROACHING:
         print('APPROACHING -> SEARCHING') ## Pro-tip: print out state _transitions_
         current_state = ROBOT_SEARCHING
         left_motor.spin(FORWARD, 30)
         right_motor.spin(FORWARD, -30)
 
+'''
+We'll use a timer to read the camera every cameraInterval milliseconds
+'''
+cameraInterval = 50
+cameraTimer = Timer()
+
+def cameraTimerCallback():
+    global current_state
+    global missedDetections
+
+    ## Here we use a checker-handler, where the checker is looking to see if there is a new object detection
+    ## We don't use a "CheckForObjects()" function because take_snapshot acts in that capacity.
+    ## It returns a non-empty list if there is a detection
+    objects = Vision3.take_snapshot(Vision3__RED_TSHIRT)
+    if objects: handleObjectDetection()
+    else: missedDetections = missedDetections + 1
+
+    if(missedDetections > 20):
+        handleMissedDetection()
+
+    # restart the timer
+    cameraTimer.event(cameraTimerCallback, 50)
+
+cameraTimer.event(cameraTimerCallback, 50)
+
 
 def handleObjectDetection():
     global current_state
     global object_timer
-    global last_detection
+    global missedDetections
 
     cx = Vision3.largest_object().centerX
     cy = Vision3.largest_object().centerY
@@ -92,26 +117,9 @@ def handleObjectDetection():
         right_motor.spin(REVERSE, 10 - turn_effort)
 
     ## reset the time out timer
-    last_detection = objectTimer.value()
-
-
-def checkObjectTimerExpired():
-    if(objectTimer.value() - last_detection > 2):
-        return True
-    else:
-        return False
+    missedDetections = 0
 
 
 ## Our main loop
 while True:
-    ## Here we use a checker-handler, where the checker is looking to see if there is a new object detection
-    ## We don't use a "CheckForObjects()" function because take_snapshot acts in that capacity.
-    ## It returns a non-empty list if there is a detection
-    objects = Vision3.take_snapshot(Vision3__RED_TSHIRT)
-    if objects: handleObjectDetection()
-
-    ## a checker to see if one second has passed since the last detection
-    if(checkObjectTimerExpired()): objectTimerCallback()
-           
-    ## for sanity, sleep before we check again
-    sleep(50)
+    pass
