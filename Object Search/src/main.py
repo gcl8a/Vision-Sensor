@@ -59,9 +59,6 @@ def handleButton():
 
 button.pressed(handleButton)
 
-target_x = 160
-K_x = 0.5
-
 '''
 We'll keep track of missed detections. If it exceeds some threshold, go back to SEARCHING
 '''
@@ -110,6 +107,10 @@ def handleObjectDetection():
 
     ## Not elif, because we want the logic to cascade
     if current_state == ROBOT_APPROACHING:
+
+        target_x = 160
+        K_x = 0.5
+
         error = cx - target_x
         turn_effort = K_x * error
 
@@ -120,7 +121,7 @@ def handleObjectDetection():
     missedDetections = 0
 
 def checkForLostObject():
-    ## THIS IS NOT A PROPER _EVENT_ CHECKER!!!!!
+    ## this is not a "proper" event checker -- need to be reasonable
     if(missedDetections > 20): return True
     else: return False
 

@@ -1,16 +1,16 @@
 {
 	"extension": {
-		"version": "0.6.0",
+		"version": "0.6.1",
 		"json": 2
 	},
 	"project": {
 		"name": "Camera-Test",
 		"description": "",
-		"creationDate": "Tue, 17 Sep 2024 17:49:55 GMT",
+		"creationDate": "Fri, 07 Feb 2025 13:52:27 GMT",
 		"platform": "V5",
 		"language": "python",
 		"slot": 1,
-		"sdkVersion": "V5_1_0_1_19",
+		"sdkVersion": "V5_1_0_1_25",
 		"python": {
 			"main": "src/main.py"
 		}
