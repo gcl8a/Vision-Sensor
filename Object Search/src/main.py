@@ -31,8 +31,11 @@ right_motor = Motor(Ports.PORT10, GearSetting.RATIO_18_1, True)
 ## Define the camera (vision)
 ## Note that we define the signatures first and then pass them to the Vision constructor --
 ## I don't know if that is truly needed or not
-Vision3__RED_TSHIRT = Signature (1, 11131, 11623, 11377, -1223, -731, -977, 8.8, 0)
-Vision3 = Vision (Ports.PORT19, 72, Vision3__RED_TSHIRT)
+
+Vision__ORANGE_PEEL = Signature (1, 3271, 5567, 4419, -3011, -1697, -2354, 0.7, 0)
+
+
+Vision19 = Vision (Ports.PORT19, 50)
 
 '''
 The button (bumper) makes use of the built-in event system.
@@ -84,7 +87,7 @@ def cameraTimerCallback():
     ## Here we use a checker-handler, where the checker checks if there is a new object detection.
     ## We don't use a "CheckForObjects()" function because take_snapshot() acts as the checker.
     ## It returns a non-empty list if there is a detection.
-    objects = Vision3.take_snapshot(Vision3__RED_TSHIRT)
+    objects = Vision19.take_snapshot(Vision__ORANGE_PEEL)
     if objects: handleObjectDetection()
     else: missedDetections = missedDetections + 1
 
@@ -98,8 +101,11 @@ def handleObjectDetection():
     global object_timer
     global missedDetections
 
-    cx = Vision3.largest_object().centerX
-    cy = Vision3.largest_object().centerY
+    cx = Vision19.largest_object().centerX
+    cy = Vision19.largest_object().centerY
+
+    ## TODO: Add code to print out the coordinates and size
+
 
     if current_state == ROBOT_SEARCHING:
         print('SEARCHING -> APPROACHING') ## Pro-tip: print out state _transitions_
@@ -114,6 +120,8 @@ def handleObjectDetection():
         error = cx - target_x
         turn_effort = K_x * error
 
+
+        ## TODO: Edit code to approach or back up to hold the right position
         left_motor.spin(REVERSE, 10 + turn_effort)
         right_motor.spin(REVERSE, 10 - turn_effort)
 
