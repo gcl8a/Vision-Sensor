@@ -132,6 +132,7 @@ def checkForLostObject():
     ## this is not a "proper" event checker -- need to be reasonable
     if(missedDetections > 20): return True
     else: return False
+    
 
 ## Our main loop
 while True:
